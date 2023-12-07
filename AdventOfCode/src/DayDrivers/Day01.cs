@@ -1,22 +1,19 @@
 ﻿using System.Xml;
 
-namespace AdventOfCode;
+namespace AdventOfCode.src.DayDrivers;
 
 public class Day01
 {
-    private string generalInputPath   = "Input//01.txt";
-    private string testInputPath      = "Input//01_test.txt";
-
     private string inputFilePath;
 
-    public Day01()
+    public Day01(String fileIndex)
     {
-        inputFilePath = generalInputPath;
+        inputFilePath = "Input//" + fileIndex + ".txt";
     }
 
-    public String Solve_1()
+    public string Solve_1()
     {
-        Int32 answerI = 0;
+        int answerI = 0;
 
         using (StreamReader reader = new StreamReader(inputFilePath))
         {
@@ -31,14 +28,14 @@ public class Day01
         return answerI.ToString();
     }
 
-    private Int32 readLine_PartOne(String inputLine)
+    private int readLine_PartOne(string inputLine)
     {
         int firstDigit = -1;
         int secondDigit = -1;
 
-        foreach(Char c in inputLine)
+        foreach (char c in inputLine)
         {
-            if (Char.IsDigit(c))
+            if (char.IsDigit(c))
             {
                 if (firstDigit == -1)
                 {
@@ -59,7 +56,7 @@ public class Day01
         return lineOutput;
     }
 
-    private Int32 readLine_PartTwo(String inputLine)
+    private int readLine_PartTwo(string inputLine)
     {
         // Pre-parse the line
         inputLine = inputLine.Replace("one", "1");
@@ -84,13 +81,13 @@ public class Day01
         return lineOutput;
     }
 
-    public String Solve_2()
+    public string Solve_2()
     {
-        Int32 answerI = 0;
+        int answerI = 0;
 
         using (StreamReader reader = new StreamReader(inputFilePath))
         {
-            String line = "";
+            string line = "";
 
             while ((line = reader.ReadLine()) != null)
             {
