@@ -8,71 +8,102 @@ namespace AdventOfCode
 {
     public class Trie
     {
+        public Node indexNode = null;
+        public const char ROOT_NODE_MARKER = '^';
+
         private readonly Node _root;
+
+        public bool isDead = false;  
+
+        public enum State
+        {
+            NOMATCH,
+            MATCH,
+            INCREMENTED
+        }
 
         public Trie()
         {
-            _root = new Node('^', 0, null);
+            _root = new Node(null, ROOT_NODE_MARKER);
+            indexNode = _root;
+
+            Build();
         }
 
-        public Node Prefix(string s)
+        public void Build()
         {
-            var currentNode = _root;
-            var result = currentNode;
+            Node nodeO = Insert(_root, 'o');
+            Node nodeON = Insert(nodeO, 'n');
+            Node nodeONE = Insert(nodeON, 'e');
 
-            foreach (var c in s)
-            {
-                currentNode = currentNode.FindChildNode(c);
-                if (currentNode == null)
-                    break;
-                result = currentNode;
+            Node nodeT = Insert(_root, 't'); 
+
+            Node nodeTW = Insert(nodeT, 'w');
+            Node nodeTWO = Insert(nodeTW, 'o');
+
+            Node nodeTH = Insert(nodeT, 'h');
+            Node nodeTHR = Insert(nodeTH, 'r');
+            Node nodeTHRE = Insert(nodeTHR, 'e');
+            Node nodeTHREE = Insert(nodeTHRE, 'e');
+
+            Node nodeF = Insert(_root, 'f');
+            Node nodeFO = Insert(nodeF, 'o');
+            Node nodeFOU = Insert(nodeFO, 'u');
+            Node nodeFOUR = Insert(nodeFOU, 'r');
+
+            Node nodeFI = Insert(nodeF, 'i');
+            Node nodeFIV = Insert(nodeFI, 'v');
+            Node nodeFIVE = Insert(nodeFIV, 'e');
+
+            Node nodeS = Insert(_root, 's');
+            Node nodeSI = Insert(nodeS, 'i');
+            Node nodeSIX = Insert(nodeSI, 'x');
+
+            Node nodeSE = Insert(nodeS, 'e');
+            Node nodeSEV = Insert(nodeSE, 'v');
+            Node nodeSEVE = Insert(nodeSEV, 'e');
+            Node nodeSEVEN = Insert(nodeSEVE, 'n');
+
+            Node nodeE = Insert(_root, 'e');
+            Node nodeEI = Insert(nodeE, 'i');
+            Node nodeEIG = Insert(nodeEI, 'g');
+            Node nodeEIGH = Insert(nodeEIG, 'h');
+            Node nodeEIGHT = Insert(nodeEIGH, 't');
+
+            Node nodeN = Insert(_root, 'n');
+            Node nodeNI = Insert(nodeN, 'i');
+            Node nodeNIN = Insert(nodeNI, 'n');
+            Node nodeNINE = Insert(nodeNIN, 'e');
+        }
+
+        public Node Insert(Node parent, char s)
+        {
+            Node theNode = new Node(parent, s);
+
+            if(parent == null){
+                _root.Add(theNode);
+            }
+            else{
+                parent.Add(theNode);
             }
 
-            return result;
+            return theNode;
         }
 
-        public bool Search(string s)
+        public State Index(char s)
         {
-            var prefix = Prefix(s);
-            return prefix.Depth == s.Length && prefix.FindChildNode('$') != null;
-        }
+            indexNode = indexNode.FindChildNode(s);
 
-        public void InsertRange(List<string> items)
-        {
-            for (int i = 0; i < items.Count; i++)
-                Insert(items[i]);
-        }
-
-        public void Insert(string s)
-        {
-            var commonPrefix = Prefix(s);
-            var current = commonPrefix;
-
-            for (var i = current.Depth; i < s.Length; i++)
-            {
-                var newNode = new Node(s[i], current.Depth + 1, current);
-                current.Children.Add(newNode);
-                current = newNode;
+            if(null == indexNode){
+                isDead = true;
+                return State.NOMATCH;
             }
-
-            current.Children.Add(new Node('$', current.Depth + 1, current));
-        }
-
-        public void Delete(string s)
-        {
-            if (Search(s))
-            {
-                var node = Prefix(s).FindChildNode('$');
-
-                while (node.IsLeaf())
-                {
-                    var parent = node.Parent;
-                    parent.DeleteChildNode(node.Value);
-                    node = parent;
-                }
+            else if(indexNode.IsLeaf()){
+                return State.MATCH;
+            }
+            else{
+                return State.INCREMENTED;
             }
         }
-
-
     }
 }

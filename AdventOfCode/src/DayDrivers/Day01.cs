@@ -56,25 +56,79 @@ public class Day01
         return lineOutput;
     }
 
-    private int readLine_PartTwo(string inputLine)
+    public static int readLine_PartTwo(string inputLine)
     {
+        Int32 lineOutput = -1;
+
+        int firstDigit = -1;
+        int secondDigit = -1;
+
+        List<Trie> tries = new List<Trie>();
+
         // Pre-parse the line
-        inputLine = inputLine.Replace("one", "1");
+        foreach (Char c in inputLine)
+        {
+            if (char.IsDigit(c))
+            {
+                tries.Clear();
 
-        inputLine = inputLine.Replace("two", "2");
-        inputLine = inputLine.Replace("three", "3");
+                if (firstDigit == -1)
+                {
+                    firstDigit = c - '0';
+                    secondDigit = c - '0';
+                }
+                else
+                {
+                    secondDigit = c - '0';
+                }
+            }
+            else
+            {
+                bool isMatch = false;
+                int charDigit = -1;
 
-        inputLine = inputLine.Replace("four", "4");
-        inputLine = inputLine.Replace("five", "5");
+                foreach(Trie trie1 in tries)
+                {
+                    if (trie1.isDead) continue;
 
-        inputLine = inputLine.Replace("six", "6");
-        inputLine = inputLine.Replace("seven", "7");
+                    if (Trie.State.MATCH == trie1.Index(c))
+                    {
+                        charDigit = trie1.indexNode.getDecimal();
+                        isMatch = true;
+                    }
+                }
 
-        inputLine = inputLine.Replace("eight", "8");
+                if (isMatch) 
+                {
+                    if (firstDigit == -1)
+                    {
+                        firstDigit = charDigit;
+                        secondDigit = charDigit;
+                    }
+                    else
+                    {
+                        secondDigit = charDigit;
+                    }
 
-        inputLine = inputLine.Replace("nine", "9");
+                    tries.Clear(); 
+                    continue; 
+                }
 
-        int lineOutput = readLine_PartOne(inputLine);
+                // Add a new trie to the group and see if it indexes
+                Trie trie = new Trie();
+
+                if(trie.Index(c) == Trie.State.INCREMENTED){
+                    tries.Add(trie);
+                }
+            }
+        }
+
+        if(firstDigit == -1)
+        {
+            return -1;
+        }
+
+        lineOutput = firstDigit * 10 + secondDigit;
 
         Console.WriteLine("Input : " + inputLine + " Output : " + lineOutput);
 
@@ -83,6 +137,8 @@ public class Day01
 
     public string Solve_2()
     {
+        int linesread = 0;
+
         int answerI = 0;
 
         using (StreamReader reader = new StreamReader(inputFilePath))
@@ -91,7 +147,13 @@ public class Day01
 
             while ((line = reader.ReadLine()) != null)
             {
-                answerI += readLine_PartTwo(line);
+                linesread++;
+
+                int value = readLine_PartTwo(line);
+
+                if (value != -1){
+                    answerI += value;
+                }
             }
         }
 
